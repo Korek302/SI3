@@ -2,6 +2,10 @@
 #define GAMEWINDOWPVE_H
 
 #include <QMainWindow>
+#include <limits>
+
+#include "node.h"
+
 
 namespace Ui
 {
@@ -24,12 +28,14 @@ private:
     int _turnNum;
     int _playerOneScore;
     int _playerTwoScore;
+    int _depth;
 
     void updateBoard(int posX, int posY, int val);
     void updateScore();
     QVector<int> getDiag1(int rowId, int colId);
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
+    void computerTurn();
     //tree generateGameTree(int** currBoard);
 
 private slots:

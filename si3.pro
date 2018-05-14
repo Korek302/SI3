@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     gamewindow.cpp \
-    gamewindowpve.cpp
+    gamewindowpve.cpp \
+    node.cpp
 
 HEADERS += \
         mainwindow.h \
     gamewindow.h \
-    gamewindowpve.h
+    gamewindowpve.h \
+    node.h
 
 FORMS += \
         mainwindow.ui \

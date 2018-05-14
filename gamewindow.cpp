@@ -5,7 +5,6 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <string.h>
-#include <vector>
 
 GameWindow::GameWindow(QWidget *parent) :
     QMainWindow(parent),
