@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton,SIGNAL(released()),this,SLOT(onPushButtonClick()));
     connect(ui->pushButton,SIGNAL(released()),this,SLOT(hide()));
+
+    connect(ui->pushButton_2,SIGNAL(released()),this,SLOT(onPushButton_2Click()));
+    connect(ui->pushButton_2,SIGNAL(released()),this,SLOT(hide()));
 }
 
 MainWindow::~MainWindow()
@@ -21,4 +24,11 @@ void MainWindow::onPushButtonClick()
     int dim = ui->spinBox->value();
     gameWindow = new GameWindow(this, dim);
     gameWindow->show();
+}
+
+void MainWindow::onPushButton_2Click()
+{
+    int dim = ui->spinBox->value();
+    gameWindowPvE = new GameWindowPvE(this, dim);
+    gameWindowPvE->show();
 }

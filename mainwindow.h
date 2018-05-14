@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "gamewindow.h"
+#include "gamewindowpve.h"
 
 namespace Ui
 {
@@ -20,9 +21,11 @@ public:
 private:
     Ui::MainWindow *ui;
     GameWindow *gameWindow;
+    GameWindowPvE *gameWindowPvE;
 
 private slots:
     void onPushButtonClick();
+    void onPushButton_2Click();
 };
 
 #endif // MAINWINDOW_H

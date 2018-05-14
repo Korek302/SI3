@@ -1,5 +1,5 @@
-#include "gamewindow.h"
-#include "ui_gamewindow.h"
+#include "gamewindowpve.h"
+#include "ui_gamewindowpve.h"
 
 #include <QPushButton>
 #include <QGridLayout>
@@ -7,9 +7,9 @@
 #include <string.h>
 #include <vector>
 
-GameWindow::GameWindow(QWidget *parent) :
+GameWindowPvE::GameWindowPvE(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::GameWindow)
+    ui(new Ui::GameWindowPvE)
 {
     ui->setupUi(this);
     _dim = 0;
@@ -36,9 +36,9 @@ GameWindow::GameWindow(QWidget *parent) :
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindow::GameWindow(QWidget *parent, int dim) :
+GameWindowPvE::GameWindowPvE(QWidget *parent, int dim) :
     QMainWindow(parent),
-    ui(new Ui::GameWindow)
+    ui(new Ui::GameWindowPvE)
 {
     ui->setupUi(this);
     _dim = dim;
@@ -65,12 +65,12 @@ GameWindow::GameWindow(QWidget *parent, int dim) :
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindow::~GameWindow()
+GameWindowPvE::~GameWindowPvE()
 {
     delete ui;
 }
 
-void GameWindow::onPushButtonClick()
+void GameWindowPvE::onPushButtonClick()
 {
     int posX = 0;
     int posY = 0;
@@ -129,12 +129,12 @@ void GameWindow::onPushButtonClick()
     button->disconnect();
 }
 
-void GameWindow::updateBoard(int posX, int posY, int val)
+void GameWindowPvE::updateBoard(int posX, int posY, int val)
 {
     _board[posX][posY] = val;
 }
 
-int GameWindow::updateScore(int posX, int posY)
+int GameWindowPvE::updateScore(int posX, int posY)
 {
     int out = 0;
     for(int i = 0; i < _dim; i++)
@@ -164,7 +164,7 @@ int GameWindow::updateScore(int posX, int posY)
     return out;
 }
 
-QVector<int> GameWindow::getDiag1(int rowId, int colId)
+QVector<int> GameWindowPvE::getDiag1(int rowId, int colId)
 {
     QVector<int> out1;
     int tempI = rowId;
@@ -186,7 +186,7 @@ QVector<int> GameWindow::getDiag1(int rowId, int colId)
     return out1;
 }
 
-QVector<int> GameWindow::getDiag2(int rowId, int colId)
+QVector<int> GameWindowPvE::getDiag2(int rowId, int colId)
 {
     QVector<int> out1;
     int tempI = rowId - 1;
@@ -208,7 +208,7 @@ QVector<int> GameWindow::getDiag2(int rowId, int colId)
     return out1;
 }
 
-int GameWindow::checkTab(QVector<int> row)
+int GameWindowPvE::checkTab(QVector<int> row)
 {
     int i = 0;
     for (; i < row.length(); i++)

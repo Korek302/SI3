@@ -26,12 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    gamewindow.cpp
+    gamewindow.cpp \
+    gamewindowpve.cpp
 
 HEADERS += \
         mainwindow.h \
-    gamewindow.h
+    gamewindow.h \
+    gamewindowpve.h
 
 FORMS += \
         mainwindow.ui \
-    gamewindow.ui
+    gamewindow.ui \
+    gamewindowpve.ui
