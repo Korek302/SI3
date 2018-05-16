@@ -1,17 +1,17 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <QVector>
 
 class Node
 {
 public:
-    Node();
-    Node(int** currBoard);
-    Node(int** currBoard, int givenValue);
-    Node(int** currBoard, int** prevBoard);
-    Node(int** currBoard, int** prevBoard, int givenValue);
+    Node(int** currBoard, int dim);
+    Node(int** currBoard, int givenValue, int dim);
+    Node(int** currBoard, int** prevBoard, int dim);
+    Node(int** currBoard, int** prevBoard, int givenValue, int dim);
 
-    void isTerminal();
+    bool isTerminal();
     int getValue();
     void setValue();
     int** getCurrBoard();
@@ -21,7 +21,7 @@ private:
     int** _prevBoard;
     int** _currBoard;
     QVector<Node> _children;
-    int value;
+    int _value;
 
     void calcChildren();
     void calcValue();

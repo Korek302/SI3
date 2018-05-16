@@ -25,6 +25,7 @@ private:
     Ui::GameWindowPvE *ui;
     int _dim;
     int** _board;
+    int** _prevBoard;
     int _turnNum;
     int _playerOneScore;
     int _playerTwoScore;
@@ -36,6 +37,9 @@ private:
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
     void computerTurn();
+    QPair<int, int> minimaxCoords();
+    Node minimax(Node currNode, int depth, bool maximizingPlayer);
+    QPair<int, int> diffSpots(int** tab1, int** tab2);
     //tree generateGameTree(int** currBoard);
 
 private slots:

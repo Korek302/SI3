@@ -31,6 +31,17 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
             _board[i][j] = 0;
         }
     }
+
+    _prevBoard = new int*[_dim];
+    for(int i = 0; i < _dim; i++)
+    {
+        _prevBoard[i] = new int[_dim];
+        for(int j = 0; j < _dim; j++)
+        {
+            _prevBoard[i][j] = 0;
+        }
+    }
+
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
@@ -61,6 +72,17 @@ GameWindowPvE::GameWindowPvE(QWidget *parent, int dim) :
             _board[i][j] = 0;
         }
     }
+
+    _prevBoard = new int*[_dim];
+    for(int i = 0; i < _dim; i++)
+    {
+        _prevBoard[i] = new int[_dim];
+        for(int j = 0; j < _dim; j++)
+        {
+            _prevBoard[i][j] = 0;
+        }
+    }
+
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
@@ -229,20 +251,20 @@ void GameWindowPvE::computerTurn()
 {
     QPair<int, int> coords;
 
-    Node bestNode = minimax(new Node(_board, _prevBoard), _depth, true);
+    Node bestNode = minimax(Node(_board, _prevBoard, _dim), _depth, true);
 
-    coords = diffSpot(_board, bestNode.getCurrBoard());
+    coords = diffSpots(_board, bestNode.getCurrBoard());
 
     updateBoard(coords.first, coords.second, -1);
     updateScore(coords.first, coords.second);
 }
-
+/*
 QPair<int, int> GameWindowPvE::minimaxCoords()
 {
     QPair<int, int> coords;
     Node bestChild;
-    Node currNode = new Node(_board, _prevBoard);
-    int bestValue = minimax(currNode, _depth, true);
+    Node currNode(_board, _prevBoard, _dim);
+    //int bestValue = minimax(currNode, _depth, true, _dim);
 
     QVector<Node> children = currNode.getChildren();
 
@@ -254,7 +276,7 @@ QPair<int, int> GameWindowPvE::minimaxCoords()
 
     return coords;
 }
-
+*/
 Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
@@ -312,7 +334,7 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 
 QPair<int, int> GameWindowPvE::diffSpots(int** tab1, int** tab2)
 {
-    QPair<int, int> out = new QPair<int, int>(0, 0);
+    QPair<int, int> out(0, 0);
     for(int i = 0; i < _dim; i++)
     {
         for(int j = 0; j < _dim; j++)
