@@ -1,10 +1,6 @@
 #include "gamewindow.h"
 #include "ui_gamewindow.h"
 
-#include <QPushButton>
-#include <QGridLayout>
-#include <QDebug>
-#include <string.h>
 
 GameWindow::GameWindow(QWidget *parent) :
     QMainWindow(parent),

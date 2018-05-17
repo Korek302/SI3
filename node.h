@@ -2,29 +2,37 @@
 #define NODE_H
 
 #include <QVector>
+#include <QPair>
 
 class Node
 {
 public:
-    Node(int** currBoard, int dim);
-    Node(int** currBoard, int givenValue, int dim);
-    Node(int** currBoard, int** prevBoard, int dim);
-    Node(int** currBoard, int** prevBoard, int givenValue, int dim);
+    Node();
+    Node(int** currBoard, QPair<int, int> move, int dim, int depth);
 
     bool isTerminal();
     int getValue();
-    void setValue();
+    QPair<int, int> getMove();
+    bool getIsTerminal();
     int** getCurrBoard();
     QVector<Node> getChildren();
 
 private:
-    int** _prevBoard;
     int** _currBoard;
+    QPair<int, int> _move;
     QVector<Node> _children;
     int _value;
+    int _dim;
+    bool _isTerminal;
+    int _depth;
 
+    int updateScore();
+    QVector<int> getDiag1(int rowId, int colId);
+    QVector<int> getDiag2(int rowId, int colId);
+    int checkTab(QVector<int> row);
+    int** copyBoard(int** original);
     void calcChildren();
-    void calcValue();
+    void showBoard(int** original);
 };
 
 #endif // NODE_H

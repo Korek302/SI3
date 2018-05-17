@@ -1,127 +1,216 @@
 #include "node.h"
 
 
-private:
-int** _prevBoard;
-int** _currBoard;
-QVector<Node> _children;
-int value;
-
-Node::Node(int** currBoard, int dim)
+Node::Node()
 {
+    _dim = 0;
     _value = 0;
-
-    _currBoard = new int*[dim];
-    for(int i = 0; i < dim; i++)
-    {
-        _currboard[i] = new int[dim];
-        for(int j = 0; j < dim; j++)
-        {
-            _currboard[i][j] = currBoard[i][j];
-            if(_currboard[i][j] == 0)
-            {
-                _currboard[i][j] = 1;
-                _children.append(Node(_currBoard, dim));
-
-                _currboard[i][j] = 0;
-            }
-        }
-    }
-
-    _prevBoard = new int*[dim];
-    for(int i = 0; i < dim; i++)
-    {
-        _prevBoard[i] = new int[dim];
-        for(int j = 0; j < dim; j++)
-        {
-            _prevBoard[i][j] = 0;
-        }
-    }
+    _isTerminal = false;
 }
 
-Node::Node(int** currBoard, int givenValue, int dim)
+Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
 {
+    _dim = dim;
+    _currBoard = copyBoard(currBoard);
 
-}
+    //showBoard(_currBoard);
 
-Node::Node(int** currBoard, int** prevBoard, int dim)
-{
-    int** tempCopy = new int*[dim];
-    for(int k = 0; k < dim; k++)
+    _isTerminal = isTerminal();
+    _depth = depth;
+
+    if(!_isTerminal && !(_depth < 1))
     {
-        tempCopy[k] = new int[dim];
-        for(int l = 0; l < dim; l++)
-        {
-            tempCopy[k][l] = _currboard[k][l];
-        }
+        calcChildren();
     }
 
-    _currBoard = new int*[dim];
-    for(int i = 0; i < dim; i++)
-    {
-        _currboard[i] = new int[dim];
-        for(int j = 0; j < dim; j++)
-        {
-            _currboard[i][j] = currBoard[i][j];
-            if(_currboard[i][j] == 0)
-            {
-                tempCopy[i][j] = 1;
-                _children.append(Node(tempCopy, currBoard, dim));
+    _move.first = move.first;
+    _move.second = move.second;
 
-                tempCopy[i][j] = 0;
-            }
-        }
-    }
-
-    _prevBoard = new int*[_dim];
-    for(int i = 0; i < _dim; i++)
-    {
-        _prevBoard[i] = new int[_dim];
-        for(int j = 0; j < _dim; j++)
-        {
-            _prevBoard[i][j] = prevBoard[i][j];
-        }
-    }
-
-    _value
-}
-
-Node::Node(int** currBoard, int** prevBoard, int givenValue, int dim)
-{
-
-}
-
-bool Node::isTerminal()
-{
-
+    _value = updateScore();
 }
 
 int Node::getValue()
 {
-
+    return _value;
 }
 
-void Node::setValue()
+bool Node::getIsTerminal()
 {
+    return _isTerminal;
+}
 
+QPair<int, int> Node::getMove()
+{
+    return _move;
 }
 
 int** Node::getCurrBoard()
 {
-
+    return _currBoard;
 }
 
 QVector<Node> Node::getChildren()
 {
+    return _children;
+}
 
+bool Node::isTerminal()
+{
+    int counter = 0;
+    for(int i = 0; i < _dim; i++)
+    {
+        for(int j = 0; j < _dim; j++)
+        {
+            if(_currBoard[i][j] == 0)
+            {
+                counter++;
+            }
+        }
+    }
+    return counter < 2 ? true : false;
+}
+
+int Node::updateScore()
+{
+    int out = 0;
+    int posX = _move.first;
+    int posY = _move.second;
+
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_currBoard[posX][i] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += _dim;
+        }
+    }
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_currBoard[i][posY] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += _dim;
+        }
+    }
+    out += checkTab(getDiag1(posX, posY));
+    out += checkTab(getDiag2(posX, posY));
+    return out;
+}
+
+QVector<int> Node::getDiag1(int rowId, int colId)
+{
+    QVector<int> out1;
+    int tempI = rowId;
+    int tempJ = colId;
+    while (tempI >= 0 && tempJ >= 0)
+    {
+        out1.push_back(_currBoard[tempI][tempJ]);
+        tempI--;
+        tempJ--;
+    }
+    tempI = rowId + 1;
+    tempJ = colId + 1;
+    while (tempI < _dim && tempJ < _dim)
+    {
+        out1.push_back(_currBoard[tempI][tempJ]);
+        tempI++;
+        tempJ++;
+    }
+    return out1;
+}
+
+QVector<int> Node::getDiag2(int rowId, int colId)
+{
+    QVector<int> out1;
+    int tempI = rowId - 1;
+    int tempJ = colId + 1;
+    while (tempI >= 0 && tempJ < _dim)
+    {
+        out1.push_back(_currBoard[tempI][tempJ]);
+        tempI--;
+        tempJ++;
+    }
+    tempI = rowId;
+    tempJ = colId;
+    while (tempI < _dim && tempJ >= 0)
+    {
+        out1.push_back(_currBoard[tempI][tempJ]);
+        tempI++;
+        tempJ--;
+    }
+    return out1;
+}
+
+int Node::checkTab(QVector<int> row)
+{
+    int i = 0;
+    for (; i < row.length(); i++)
+    {
+        if(row.at(i) == 0)
+        {
+            return 0;
+        }
+    }
+    return i > 2 ? i : 0;
+}
+
+int** Node::copyBoard(int** original)
+{
+    int** out = new int*[_dim];
+    for(int i = 0; i < _dim; i++)
+    {
+        out[i] = new int[_dim];
+        for(int j = 0; j < _dim; j++)
+        {
+            out[i][j] = original[i][j];
+        }
+    }
+    return out;
 }
 
 void Node::calcChildren()
 {
+    int** tempCopy = copyBoard(_currBoard);
 
+    for(int i = 0; i < _dim; i++)
+    {
+        for(int j = 0; j < _dim; j++)
+        {
+            if(tempCopy[i][j] == 0)
+            {
+                tempCopy[i][j] = 1;
+                int** tempCopyCopy = copyBoard(tempCopy);
+                _children.append(Node(tempCopyCopy, QPair<int, int>(i, j), _dim, _depth - 1));
+                tempCopy[i][j] = 0;
+            }
+        }
+    }
 }
 
-void Node::calcValue()
+void Node::showBoard(int** original)
 {
-
+    QString str = "";
+    for(int i = 0; i < _dim; i++)
+    {
+        for(int j = 0; j < _dim; j++)
+        {
+            str += (QString::number(original[i][j]) + " ");
+        }
+        qDebug(str.toLatin1());
+        str = "";
+    }
+    qDebug("\n");
 }
+
+
+
+
+
+
+

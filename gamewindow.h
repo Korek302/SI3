@@ -2,6 +2,12 @@
 #define GAMEWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QGridLayout>
+#include <QDebug>
+#include <QVector>
+#include <string.h>
+
 
 namespace Ui
 {
@@ -26,14 +32,13 @@ private:
     int _playerTwoScore;
 
     void updateBoard(int posX, int posY, int val);
-    void updateScore();
     QVector<int> getDiag1(int rowId, int colId);
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
+    int updateScore(int posX, int posY);
 
 private slots:
     void onPushButtonClick();
-    int updateScore(int posX, int posY);
 };
 
 #endif // GAMEWINDOW_H

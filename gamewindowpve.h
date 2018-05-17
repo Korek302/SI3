@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 #include <limits>
+#include <QPushButton>
+#include <QGridLayout>
+#include <QDebug>
+#include <QVector>
+#include <string.h>
 
 #include "node.h"
 
@@ -32,19 +37,21 @@ private:
     int _depth;
 
     void updateBoard(int posX, int posY, int val);
-    void updateScore();
     QVector<int> getDiag1(int rowId, int colId);
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
-    void computerTurn();
-    QPair<int, int> minimaxCoords();
+    void computerTurn(QPair<int, int> move);
+    Node minimaxNode(Node currNode, int besValue);
+    int minimaxBestVal(Node currNode, int depth, bool maximizingPlayer);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
     QPair<int, int> diffSpots(int** tab1, int** tab2);
+    int** copyBoard(int** original);
+    int updateScore(int posX, int posY);
+    void showBoard(int** original);
     //tree generateGameTree(int** currBoard);
 
 private slots:
     void onPushButtonClick();
-    int updateScore(int posX, int posY);
 };
 
 #endif // GAMEWINDOWPVE_H

@@ -1,11 +1,6 @@
 #include "gamewindowpve.h"
 #include "ui_gamewindowpve.h"
 
-#include <QPushButton>
-#include <QGridLayout>
-#include <QDebug>
-#include <string.h>
-#include <vector>
 
 GameWindowPvE::GameWindowPvE(QWidget *parent) :
     QMainWindow(parent),
@@ -57,7 +52,7 @@ GameWindowPvE::GameWindowPvE(QWidget *parent, int dim) :
     _turnNum = 0;
     _playerOneScore = 0;
     _playerTwoScore = 0;
-    _depth = 3;
+    _depth = 5;
 
     _board = new int*[_dim];
     for(int i = 0; i < _dim; i++)
@@ -99,34 +94,19 @@ void GameWindowPvE::onPushButtonClick()
     int posX = 0;
     int posY = 0;
     int flush = 0;
-    bool player = _turnNum % 2 == 0?true:false;
+
     QWidget* button =(QWidget*)(this->sender());
     int buttonIndex = ui->gridLayout->indexOf(button);
-
-    if(player)
-    {
-        button->setStyleSheet("background-color: blue");
-    }
-    else
-    {
-        button->setStyleSheet("background-color: red");
-    }
+    button->setStyleSheet("background-color: blue");
     //button->update();
 
     ui->gridLayout->getItemPosition(buttonIndex, &posX, &posY, &flush, &flush);
 
-    updateBoard(posX, posY, player?1:-1);
-    if(player)
-    {
-        updateBoard(posX, posY, 1);
-        _playerOneScore += updateScore(posX, posY);
-    }
-    else
-    {
-        updateBoard(posX, posY, -1);
-        _playerTwoScore += updateScore(posX, posY);
-    }
-    QString currPlayerColor = player ? "Red" : "Blue";
+    _prevBoard = copyBoard(_board);
+    updateBoard(posX, posY, 1);
+    _playerOneScore += updateScore(posX, posY);
+
+    QString currPlayerColor = "Red";
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
                        "\nRedPlayer: " + QString::number(_playerTwoScore) +
@@ -152,7 +132,160 @@ void GameWindowPvE::onPushButtonClick()
     }
     button->disconnect();
 
-    computerTurn();
+    computerTurn(QPair<int, int>(posX, posY));
+}
+
+void GameWindowPvE::computerTurn(QPair<int, int> move)
+{
+    QPair<int, int> coords;
+    //showBoard(_board);
+
+    //Node bestNode = minimax(Node(_board, diffSpots(_prevBoard, _board), _dim, _depth), _depth, true);
+    //showBoard(bestNode.getCurrBoard());
+
+    Node currNode = Node(_board, move, _dim, _depth);
+    Node bestNode = minimaxNode(currNode, minimaxBestVal(currNode, _depth, true));
+
+    coords = bestNode.getMove();//diffSpots(_board, bestNode.getCurrBoard());
+
+    qDebug(QString::number(coords.first).toLatin1() + " " + QString::number(coords.second).toLatin1());
+
+
+    QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
+    button->widget()->setStyleSheet("background-color: red");
+
+    _prevBoard = copyBoard(_board);
+    updateBoard(coords.first, coords.second, 1);
+
+    _playerTwoScore = updateScore(coords.first, coords.second);
+    ui->label->setText("Score:"
+                       "\nBluePlayer: " + QString::number(_playerOneScore) +
+                       "\nRedPlayer: " + QString::number(_playerTwoScore) +
+                       "\n\nCurrPlayer: Blue");
+    //ui->label->setText(QString::number(coords.first)+" - "+QString::number(coords.second));
+
+    _turnNum++;
+
+    if(_turnNum > _dim*_dim - 1)
+    {
+        qDebug("koniec");
+        if(_playerOneScore > _playerTwoScore)
+        {
+            ui->label->setText("Winner: Blue");
+        }
+        else if(_playerOneScore < _playerTwoScore)
+        {
+            ui->label->setText("Winner: Red");
+        }
+        else
+        {
+            ui->label->setText("Tie");
+        }
+    }
+    button->widget()->disconnect();
+}
+
+int GameWindowPvE::minimaxBestVal(Node currNode, int depth, bool maximizingPlayer)
+{
+    int bestValue;
+
+    QVector<Node> children = currNode.getChildren();
+
+    if(depth == 0 || currNode.isTerminal())
+    {
+        return currNode.getValue();
+    }
+    if(maximizingPlayer)
+    {
+        bestValue = std::numeric_limits<int>::min();
+        foreach(Node n, children)
+        {
+            int v = minimaxBestVal(n, depth - 1, false);
+            bestValue = std::max(bestValue, v);
+        }
+        return bestValue;
+    }
+    else
+    {
+        bestValue = std::numeric_limits<int>::max();
+        foreach(Node n, children)
+        {
+            int v = minimaxBestVal(n, depth - 1, true);
+            bestValue = std::min(bestValue, v);
+        }
+        return bestValue;
+    }
+}
+
+Node GameWindowPvE::minimaxNode(Node currNode, int bestValue)
+{
+    Node out;
+    QVector<Node> children = currNode.getChildren();
+    foreach(Node n, children)
+    {
+        if(n.getValue() == bestValue)
+        {
+            out = n;
+            return out;
+        }
+    }
+    qDebug("ehhhhhhhhhhhhhhhhhhhhh");
+    return out;
+}
+
+Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
+{
+    int bestValue;
+    Node bestChild;
+
+    QVector<Node> children = currNode.getChildren();
+
+    if(depth == 0 || currNode.isTerminal())
+    {
+        return currNode;
+    }
+    if(maximizingPlayer)
+    {
+        bestValue = std::numeric_limits<int>::min();
+        foreach(Node n, children)
+        {
+            Node temp = minimax(n, depth - 1, false);
+            bestValue = std::max(bestValue, temp.getValue());
+            if(temp.getValue() > bestValue)
+            {
+                bestChild = temp;
+            }
+            else
+            {
+                bestChild = currNode;
+            }
+
+            //int v = minimax(n, depth - 1, false);
+            //bestValue = std::max(bestValue, v);
+        }
+        return bestChild;
+    }
+    else
+    {
+        bestValue = std::numeric_limits<int>::max();
+        foreach(Node n, children)
+        {
+            Node temp = minimax(n, depth - 1, true);
+            bestValue = std::min(bestValue, temp.getValue());
+            if(temp.getValue() < bestValue)
+            {
+                bestChild = temp;
+            }
+            else
+            {
+                bestChild = currNode;
+            }
+
+            //int v = minimax(n, depth - 1, true);
+            //bestValue = std::min(bestValue, v);
+        }
+        return bestChild;
+    }
 }
 
 void GameWindowPvE::updateBoard(int posX, int posY, int val)
@@ -247,94 +380,9 @@ int GameWindowPvE::checkTab(QVector<int> row)
     return i > 2 ? i : 0;
 }
 
-void GameWindowPvE::computerTurn()
-{
-    QPair<int, int> coords;
-
-    Node bestNode = minimax(Node(_board, _prevBoard, _dim), _depth, true);
-
-    coords = diffSpots(_board, bestNode.getCurrBoard());
-
-    updateBoard(coords.first, coords.second, -1);
-    updateScore(coords.first, coords.second);
-}
-/*
-QPair<int, int> GameWindowPvE::minimaxCoords()
-{
-    QPair<int, int> coords;
-    Node bestChild;
-    Node currNode(_board, _prevBoard, _dim);
-    //int bestValue = minimax(currNode, _depth, true, _dim);
-
-    QVector<Node> children = currNode.getChildren();
-
-
-    foreach(Node n, children)
-    {
-
-    }
-
-    return coords;
-}
-*/
-Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
-{
-    int bestValue;
-    Node bestChild;
-
-    QVector<Node> children = currNode.getChildren();
-
-    if(depth == 0 || currNode.isTerminal())
-    {
-        return currNode;
-    }
-    if(maximizingPlayer)
-    {
-        bestValue = std::numeric_limits<int>::min();
-        foreach(Node n, children)
-        {
-            Node temp = minimax(n, depth - 1, false);
-            bestValue = std::max(bestValue, temp.getValue());
-            if(temp.getValue() > bestValue)
-            {
-                bestChild = temp;
-            }
-            else
-            {
-                bestChild = currNode;
-            }
-
-            //int v = minimax(n, depth - 1, false);
-            //bestValue = std::max(bestValue, v);
-        }
-        return bestChild;
-    }
-    else
-    {
-        bestValue = std::numeric_limits<int>::max();
-        foreach(Node n, children)
-        {
-            Node temp = minimax(n, depth - 1, true);
-            bestValue = std::min(bestValue, temp.getValue());
-            if(temp.getValue() < bestValue)
-            {
-                bestChild = temp;
-            }
-            else
-            {
-                bestChild = currNode;
-            }
-
-            //int v = minimax(n, depth - 1, true);
-            //bestValue = std::min(bestValue, v);
-        }
-        return bestChild;
-    }
-}
-
 QPair<int, int> GameWindowPvE::diffSpots(int** tab1, int** tab2)
 {
-    QPair<int, int> out(0, 0);
+    QPair<int, int> out(-1, -1);
     for(int i = 0; i < _dim; i++)
     {
         for(int j = 0; j < _dim; j++)
@@ -350,9 +398,34 @@ QPair<int, int> GameWindowPvE::diffSpots(int** tab1, int** tab2)
     return out;
 }
 
+int** GameWindowPvE::copyBoard(int** original)
+{
+    int** out = new int*[_dim];
+    for(int i = 0; i < _dim; i++)
+    {
+        out[i] = new int[_dim];
+        for(int j = 0; j < _dim; j++)
+        {
+            out[i][j] = original[i][j];
+        }
+    }
+    return out;
+}
 
-
-
+void GameWindowPvE::showBoard(int** original)
+{
+    QString str = "";
+    for(int i = 0; i < _dim; i++)
+    {
+        for(int j = 0; j < _dim; j++)
+        {
+            str += (QString::number(original[i][j]) + " ");
+        }
+        qDebug(str.toLatin1());
+        str = "";
+    }
+    qDebug("\n");
+}
 
 
 
