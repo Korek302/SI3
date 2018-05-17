@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>294</width>
-    <height>219</height>
+    <width>322</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Stratego</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>90</x>
       <y>130</y>
       <width>101</width>
       <height>21</height>
@@ -30,9 +30,9 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>20</y>
-      <width>191</width>
+      <x>70</x>
+      <y>10</y>
+      <width>181</width>
       <height>91</height>
      </rect>
     </property>
@@ -49,7 +49,7 @@
    <widget class="QSpinBox" name="spinBox">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>130</y>
       <width>43</width>
       <height>22</height>
@@ -65,27 +65,53 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>160</y>
       <width>80</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Play</string>
+     <string>PvP</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>180</y>
-      <width>80</width>
-      <height>21</height>
+      <x>20</x>
+      <y>160</y>
+      <width>81</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>PvE</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>200</y>
+      <width>72</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ai start</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>160</y>
+      <width>80</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EvE</string>
     </property>
    </widget>
   </widget>

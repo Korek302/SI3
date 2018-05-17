@@ -9,6 +9,7 @@ class Node
 public:
     Node();
     Node(int** currBoard, QPair<int, int> move, int dim, int depth);
+    ~Node();
 
     bool isTerminal();
     int getValue();
@@ -26,11 +27,11 @@ private:
     bool _isTerminal;
     int _depth;
 
-    int updateScore();
     QVector<int> getDiag1(int rowId, int colId);
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
     int** copyBoard(int** original);
+    int calcValue();
     void calcChildren();
     void showBoard(int** original);
 };

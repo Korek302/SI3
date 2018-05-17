@@ -63,6 +63,11 @@ GameWindow::GameWindow(QWidget *parent, int dim) :
 GameWindow::~GameWindow()
 {
     delete ui;
+    for(int i = 0; i < _dim; i++)
+    {
+        delete _board[i];
+    }
+    delete _board;
 }
 
 void GameWindow::onPushButtonClick()

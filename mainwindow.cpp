@@ -29,6 +29,7 @@ void MainWindow::onPushButtonClick()
 void MainWindow::onPushButton_2Click()
 {
     int dim = ui->spinBox->value();
-    gameWindowPvE = new GameWindowPvE(this, dim);
+    bool aiStart = ui->checkBox->isChecked();
+    gameWindowPvE = new GameWindowPvE(this, dim, aiStart);
     gameWindowPvE->show();
 }

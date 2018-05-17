@@ -27,23 +27,13 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
         }
     }
 
-    _prevBoard = new int*[_dim];
-    for(int i = 0; i < _dim; i++)
-    {
-        _prevBoard[i] = new int[_dim];
-        for(int j = 0; j < _dim; j++)
-        {
-            _prevBoard[i][j] = 0;
-        }
-    }
-
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindowPvE::GameWindowPvE(QWidget *parent, int dim) :
+GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart) :
     QMainWindow(parent),
     ui(new Ui::GameWindowPvE)
 {
@@ -68,25 +58,26 @@ GameWindowPvE::GameWindowPvE(QWidget *parent, int dim) :
         }
     }
 
-    _prevBoard = new int*[_dim];
-    for(int i = 0; i < _dim; i++)
-    {
-        _prevBoard[i] = new int[_dim];
-        for(int j = 0; j < _dim; j++)
-        {
-            _prevBoard[i][j] = 0;
-        }
-    }
-
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
                        "\n\nCurrPlayer: Blue");
+
+    if(aiStart)
+    {
+        computerTurn(QPair<int, int>(-1, -1));
+    }
+
 }
 
 GameWindowPvE::~GameWindowPvE()
 {
     delete ui;
+    for(int i = 0; i < _dim; i++)
+    {
+        delete _board[i];
+    }
+    delete _board;
 }
 
 void GameWindowPvE::onPushButtonClick()
@@ -102,7 +93,6 @@ void GameWindowPvE::onPushButtonClick()
 
     ui->gridLayout->getItemPosition(buttonIndex, &posX, &posY, &flush, &flush);
 
-    _prevBoard = copyBoard(_board);
     updateBoard(posX, posY, 1);
     _playerOneScore += updateScore(posX, posY);
 
@@ -130,23 +120,20 @@ void GameWindowPvE::onPushButtonClick()
             ui->label->setText("Tie");
         }
     }
+    else
+    {
+        computerTurn(QPair<int, int>(posX, posY));
+    }
     button->disconnect();
-
-    computerTurn(QPair<int, int>(posX, posY));
 }
 
 void GameWindowPvE::computerTurn(QPair<int, int> move)
 {
     QPair<int, int> coords;
-    //showBoard(_board);
 
-    //Node bestNode = minimax(Node(_board, diffSpots(_prevBoard, _board), _dim, _depth), _depth, true);
-    //showBoard(bestNode.getCurrBoard());
+    Node bestNode = minimax(Node(_board, move, _dim, _depth), _depth, true);
 
-    Node currNode = Node(_board, move, _dim, _depth);
-    Node bestNode = minimaxNode(currNode, minimaxBestVal(currNode, _depth, true));
-
-    coords = bestNode.getMove();//diffSpots(_board, bestNode.getCurrBoard());
+    coords = bestNode.getMove();
 
     qDebug(QString::number(coords.first).toLatin1() + " " + QString::number(coords.second).toLatin1());
 
@@ -154,15 +141,13 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
     QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
     button->widget()->setStyleSheet("background-color: red");
 
-    _prevBoard = copyBoard(_board);
     updateBoard(coords.first, coords.second, 1);
 
-    _playerTwoScore = updateScore(coords.first, coords.second);
+    _playerTwoScore += updateScore(coords.first, coords.second);
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
                        "\nRedPlayer: " + QString::number(_playerTwoScore) +
                        "\n\nCurrPlayer: Blue");
-    //ui->label->setText(QString::number(coords.first)+" - "+QString::number(coords.second));
 
     _turnNum++;
 
@@ -185,54 +170,6 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
     button->widget()->disconnect();
 }
 
-int GameWindowPvE::minimaxBestVal(Node currNode, int depth, bool maximizingPlayer)
-{
-    int bestValue;
-
-    QVector<Node> children = currNode.getChildren();
-
-    if(depth == 0 || currNode.isTerminal())
-    {
-        return currNode.getValue();
-    }
-    if(maximizingPlayer)
-    {
-        bestValue = std::numeric_limits<int>::min();
-        foreach(Node n, children)
-        {
-            int v = minimaxBestVal(n, depth - 1, false);
-            bestValue = std::max(bestValue, v);
-        }
-        return bestValue;
-    }
-    else
-    {
-        bestValue = std::numeric_limits<int>::max();
-        foreach(Node n, children)
-        {
-            int v = minimaxBestVal(n, depth - 1, true);
-            bestValue = std::min(bestValue, v);
-        }
-        return bestValue;
-    }
-}
-
-Node GameWindowPvE::minimaxNode(Node currNode, int bestValue)
-{
-    Node out;
-    QVector<Node> children = currNode.getChildren();
-    foreach(Node n, children)
-    {
-        if(n.getValue() == bestValue)
-        {
-            out = n;
-            return out;
-        }
-    }
-    qDebug("ehhhhhhhhhhhhhhhhhhhhh");
-    return out;
-}
-
 Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
@@ -240,7 +177,7 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 
     QVector<Node> children = currNode.getChildren();
 
-    if(depth == 0 || currNode.isTerminal())
+    if(depth == 0 || currNode.getIsTerminal())
     {
         return currNode;
     }
@@ -251,17 +188,10 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
         {
             Node temp = minimax(n, depth - 1, false);
             bestValue = std::max(bestValue, temp.getValue());
-            if(temp.getValue() > bestValue)
+            if(temp.getValue() >= bestValue)
             {
                 bestChild = temp;
             }
-            else
-            {
-                bestChild = currNode;
-            }
-
-            //int v = minimax(n, depth - 1, false);
-            //bestValue = std::max(bestValue, v);
         }
         return bestChild;
     }
@@ -272,17 +202,10 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
         {
             Node temp = minimax(n, depth - 1, true);
             bestValue = std::min(bestValue, temp.getValue());
-            if(temp.getValue() < bestValue)
+            if(temp.getValue() <= bestValue)
             {
                 bestChild = temp;
             }
-            else
-            {
-                bestChild = currNode;
-            }
-
-            //int v = minimax(n, depth - 1, true);
-            //bestValue = std::min(bestValue, v);
         }
         return bestChild;
     }

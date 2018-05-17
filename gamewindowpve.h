@@ -23,14 +23,13 @@ class GameWindowPvE : public QMainWindow
 
 public:
     explicit GameWindowPvE(QWidget *parent);
-    explicit GameWindowPvE(QWidget *parent, int dim);
+    explicit GameWindowPvE(QWidget *parent, int dim, bool aiStart);
     ~GameWindowPvE();
 
 private:
     Ui::GameWindowPvE *ui;
     int _dim;
     int** _board;
-    int** _prevBoard;
     int _turnNum;
     int _playerOneScore;
     int _playerTwoScore;
@@ -41,14 +40,11 @@ private:
     QVector<int> getDiag2(int rowId, int colId);
     int checkTab(QVector<int> row);
     void computerTurn(QPair<int, int> move);
-    Node minimaxNode(Node currNode, int besValue);
-    int minimaxBestVal(Node currNode, int depth, bool maximizingPlayer);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
     QPair<int, int> diffSpots(int** tab1, int** tab2);
     int** copyBoard(int** original);
     int updateScore(int posX, int posY);
     void showBoard(int** original);
-    //tree generateGameTree(int** currBoard);
 
 private slots:
     void onPushButtonClick();

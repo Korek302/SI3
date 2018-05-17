@@ -6,27 +6,34 @@ Node::Node()
     _dim = 0;
     _value = 0;
     _isTerminal = false;
+    _depth = 0;
+    _move.first = 0;
+    _move.second = 0;
 }
 
 Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
 {
     _dim = dim;
-    _currBoard = copyBoard(currBoard);
-
-    //showBoard(_currBoard);
-
-    _isTerminal = isTerminal();
     _depth = depth;
+    _currBoard = copyBoard(currBoard);
+    _isTerminal = isTerminal();
+    _move.first = move.first;
+    _move.second = move.second;
+    _value = calcValue();
 
     if(!_isTerminal && !(_depth < 1))
     {
         calcChildren();
     }
+}
 
-    _move.first = move.first;
-    _move.second = move.second;
-
-    _value = updateScore();
+Node::~Node()
+{
+    for(int i = 0; i < _dim; i++)
+    {
+        //delete _currBoard[i];
+    }
+    //delete _currBoard;
 }
 
 int Node::getValue()
@@ -67,14 +74,18 @@ bool Node::isTerminal()
             }
         }
     }
-    return counter < 2 ? true : false;
+    return counter < 1 ? true : false;
 }
 
-int Node::updateScore()
+int Node::calcValue()
 {
     int out = 0;
     int posX = _move.first;
     int posY = _move.second;
+    if(posX == -1 && posY == -1)
+    {
+        return 0;
+    }
 
     for(int i = 0; i < _dim; i++)
     {
@@ -176,18 +187,18 @@ int** Node::copyBoard(int** original)
 
 void Node::calcChildren()
 {
-    int** tempCopy = copyBoard(_currBoard);
+    //int** tempCopy = copyBoard(_currBoard);
 
     for(int i = 0; i < _dim; i++)
     {
         for(int j = 0; j < _dim; j++)
         {
-            if(tempCopy[i][j] == 0)
+            if(_currBoard[i][j] == 0)
             {
-                tempCopy[i][j] = 1;
-                int** tempCopyCopy = copyBoard(tempCopy);
-                _children.append(Node(tempCopyCopy, QPair<int, int>(i, j), _dim, _depth - 1));
-                tempCopy[i][j] = 0;
+                _currBoard[i][j] = 1;
+                int** tempCopy = copyBoard(_currBoard);
+                _children.append(Node(tempCopy, QPair<int, int>(i, j), _dim, _depth - 1));
+                _currBoard[i][j] = 0;
             }
         }
     }
