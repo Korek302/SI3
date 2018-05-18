@@ -1,6 +1,9 @@
 #ifndef GAMEWINDOWPVE_H
 #define GAMEWINDOWPVE_H
 
+#include "node.h"
+#include "utility.h"
+
 #include <QMainWindow>
 #include <limits>
 #include <QPushButton>
@@ -8,8 +11,6 @@
 #include <QDebug>
 #include <QVector>
 #include <string.h>
-
-#include "node.h"
 
 
 namespace Ui
@@ -34,17 +35,12 @@ private:
     int _playerOneScore;
     int _playerTwoScore;
     int _depth;
+    Utility _utility;
 
-    void updateBoard(int posX, int posY, int val);
-    QVector<int> getDiag1(int rowId, int colId);
-    QVector<int> getDiag2(int rowId, int colId);
-    int checkTab(QVector<int> row);
     void computerTurn(QPair<int, int> move);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
-    QPair<int, int> diffSpots(int** tab1, int** tab2);
-    int** copyBoard(int** original);
     int updateScore(int posX, int posY);
-    void showBoard(int** original);
+    void initBoard();
 
 private slots:
     void onPushButtonClick();

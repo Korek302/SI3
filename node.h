@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "utility.h"
+
 #include <QVector>
 #include <QPair>
 
@@ -11,7 +13,6 @@ public:
     Node(int** currBoard, QPair<int, int> move, int dim, int depth);
     ~Node();
 
-    bool isTerminal();
     int getValue();
     QPair<int, int> getMove();
     bool getIsTerminal();
@@ -26,14 +27,11 @@ private:
     int _dim;
     bool _isTerminal;
     int _depth;
+    Utility _utility;
 
-    QVector<int> getDiag1(int rowId, int colId);
-    QVector<int> getDiag2(int rowId, int colId);
-    int checkTab(QVector<int> row);
-    int** copyBoard(int** original);
+    bool isTerminal();
     int calcValue();
     void calcChildren();
-    void showBoard(int** original);
 };
 
 #endif // NODE_H

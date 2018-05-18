@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    //delete gameWindow;
+    //delete gameWindowPvE;
 }
 
 void MainWindow::onPushButtonClick()

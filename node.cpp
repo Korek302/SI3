@@ -9,13 +9,15 @@ Node::Node()
     _depth = 0;
     _move.first = 0;
     _move.second = 0;
+    _utility = Utility();
 }
 
 Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
 {
     _dim = dim;
     _depth = depth;
-    _currBoard = copyBoard(currBoard);
+    _utility = Utility();
+    _currBoard = _utility.copyBoard(currBoard, _dim);
     _isTerminal = isTerminal();
     _move.first = move.first;
     _move.second = move.second;
@@ -29,10 +31,10 @@ Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
 
 Node::~Node()
 {
-    for(int i = 0; i < _dim; i++)
-    {
+    //for(int i = 0; i < _dim; i++)
+    //{
         //delete _currBoard[i];
-    }
+    //}
     //delete _currBoard;
 }
 
@@ -109,86 +111,13 @@ int Node::calcValue()
             out += _dim;
         }
     }
-    out += checkTab(getDiag1(posX, posY));
-    out += checkTab(getDiag2(posX, posY));
-    return out;
-}
-
-QVector<int> Node::getDiag1(int rowId, int colId)
-{
-    QVector<int> out1;
-    int tempI = rowId;
-    int tempJ = colId;
-    while (tempI >= 0 && tempJ >= 0)
-    {
-        out1.push_back(_currBoard[tempI][tempJ]);
-        tempI--;
-        tempJ--;
-    }
-    tempI = rowId + 1;
-    tempJ = colId + 1;
-    while (tempI < _dim && tempJ < _dim)
-    {
-        out1.push_back(_currBoard[tempI][tempJ]);
-        tempI++;
-        tempJ++;
-    }
-    return out1;
-}
-
-QVector<int> Node::getDiag2(int rowId, int colId)
-{
-    QVector<int> out1;
-    int tempI = rowId - 1;
-    int tempJ = colId + 1;
-    while (tempI >= 0 && tempJ < _dim)
-    {
-        out1.push_back(_currBoard[tempI][tempJ]);
-        tempI--;
-        tempJ++;
-    }
-    tempI = rowId;
-    tempJ = colId;
-    while (tempI < _dim && tempJ >= 0)
-    {
-        out1.push_back(_currBoard[tempI][tempJ]);
-        tempI++;
-        tempJ--;
-    }
-    return out1;
-}
-
-int Node::checkTab(QVector<int> row)
-{
-    int i = 0;
-    for (; i < row.length(); i++)
-    {
-        if(row.at(i) == 0)
-        {
-            return 0;
-        }
-    }
-    return i > 2 ? i : 0;
-}
-
-int** Node::copyBoard(int** original)
-{
-    int** out = new int*[_dim];
-    for(int i = 0; i < _dim; i++)
-    {
-        out[i] = new int[_dim];
-        for(int j = 0; j < _dim; j++)
-        {
-            out[i][j] = original[i][j];
-        }
-    }
+    out += _utility.checkTab(_utility.getDiag1(posX, posY, _currBoard, _dim));
+    out += _utility.checkTab(_utility.getDiag2(posX, posY, _currBoard, _dim));
     return out;
 }
 
 void Node::calcChildren()
 {
-    //int** tempCopy = copyBoard(_currBoard);
-
     for(int i = 0; i < _dim; i++)
     {
         for(int j = 0; j < _dim; j++)
@@ -196,32 +125,13 @@ void Node::calcChildren()
             if(_currBoard[i][j] == 0)
             {
                 _currBoard[i][j] = 1;
-                int** tempCopy = copyBoard(_currBoard);
+                int** tempCopy = _utility.copyBoard(_currBoard, _dim);
                 _children.append(Node(tempCopy, QPair<int, int>(i, j), _dim, _depth - 1));
                 _currBoard[i][j] = 0;
             }
         }
     }
 }
-
-void Node::showBoard(int** original)
-{
-    QString str = "";
-    for(int i = 0; i < _dim; i++)
-    {
-        for(int j = 0; j < _dim; j++)
-        {
-            str += (QString::number(original[i][j]) + " ");
-        }
-        qDebug(str.toLatin1());
-        str = "";
-    }
-    qDebug("\n");
-}
-
-
-
-
 
 
 
