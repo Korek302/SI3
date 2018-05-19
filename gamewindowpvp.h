@@ -1,14 +1,10 @@
 #ifndef GAMEWINDOWPVP_H
 #define GAMEWINDOWPVP_H
 
-#include "utility.h"
+#include "gamewindow.h"
 
-#include <QMainWindow>
 #include <QPushButton>
 #include <QGridLayout>
-#include <QDebug>
-#include <QVector>
-#include <string.h>
 
 
 namespace Ui
@@ -16,7 +12,7 @@ namespace Ui
     class GameWindowPvP;
 }
 
-class GameWindowPvP : public QMainWindow
+class GameWindowPvP : public GameWindow
 {
     Q_OBJECT
 
@@ -27,14 +23,7 @@ public:
 
 private:
     Ui::GameWindowPvP *ui;
-    int _dim;
-    int** _board;
-    int _turnNum;
-    int _playerOneScore;
-    int _playerTwoScore;
-    Utility _utility;
 
-    int updateScore(int posX, int posY);
     void initBoard();
 
 private slots:

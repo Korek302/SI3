@@ -20,7 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    GameWindowPvP *gameWindowPvP;
+    GameWindow *gameWindowPvP;
     GameWindowPvE *gameWindowPvE;
 
 private slots:

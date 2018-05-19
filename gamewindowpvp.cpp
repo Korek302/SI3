@@ -3,14 +3,10 @@
 
 
 GameWindowPvP::GameWindowPvP(QWidget *parent) :
-    QMainWindow(parent),
+    GameWindow(parent),
     ui(new Ui::GameWindowPvP)
 {
     ui->setupUi(this);
-    _dim = 0;
-    _turnNum = 0;
-    _playerOneScore = 0;
-    _playerTwoScore = 0;
 
     initBoard();
     ui->label->setText("Score:"
@@ -20,14 +16,10 @@ GameWindowPvP::GameWindowPvP(QWidget *parent) :
 }
 
 GameWindowPvP::GameWindowPvP(QWidget *parent, int dim) :
-    QMainWindow(parent),
+    GameWindow(parent, dim),
     ui(new Ui::GameWindowPvP)
 {
     ui->setupUi(this);
-    _dim = dim;
-    _turnNum = 0;
-    _playerOneScore = 0;
-    _playerTwoScore = 0;
 
     initBoard();
     ui->label->setText("Score:"
@@ -104,36 +96,6 @@ void GameWindowPvP::onPushButtonClick()
     button->disconnect();
 }
 
-int GameWindowPvP::updateScore(int posX, int posY)
-{
-    int out = 0;
-    for(int i = 0; i < _dim; i++)
-    {
-        if(_board[posX][i] == 0)
-        {
-            break;
-        }
-        if(i == _dim - 1)
-        {
-            out += _dim;
-        }
-    }
-    for(int i = 0; i < _dim; i++)
-    {
-        if(_board[i][posY] == 0)
-        {
-            break;
-        }
-        if(i == _dim - 1)
-        {
-            out += _dim;
-        }
-    }
-    out += _utility.checkTab(_utility.getDiag1(posX, posY, _board, _dim));
-    out += _utility.checkTab(_utility.getDiag2(posX, posY, _board, _dim));
-    return out;
-}
-
 void GameWindowPvP::initBoard()
 {
     _board = new int*[_dim];
@@ -146,7 +108,7 @@ void GameWindowPvP::initBoard()
             connect(button,SIGNAL(released()),this,SLOT(onPushButtonClick()));
             button->setMaximumHeight(button->width());
             ui->gridLayout->addWidget(button, i, j);
-            _board[i][j] = 0;
+            //_board[i][j] = 0;
         }
     }
 }

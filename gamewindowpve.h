@@ -10,7 +10,6 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QVector>
-#include <string.h>
 
 
 namespace Ui

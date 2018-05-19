@@ -29,14 +29,16 @@ SOURCES += \
     gamewindowpve.cpp \
     node.cpp \
     utility.cpp \
-    gamewindowpvp.cpp
+    gamewindowpvp.cpp \
+    gamewindow.cpp
 
 HEADERS += \
         mainwindow.h \
     gamewindowpve.h \
     node.h \
     utility.h \
-    gamewindowpvp.h
+    gamewindowpvp.h \
+    gamewindow.h
 
 FORMS += \
         mainwindow.ui \
