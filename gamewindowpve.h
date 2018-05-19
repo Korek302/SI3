@@ -24,7 +24,7 @@ class GameWindowPvE : public QMainWindow
 
 public:
     explicit GameWindowPvE(QWidget *parent);
-    explicit GameWindowPvE(QWidget *parent, int dim, bool aiStart);
+    explicit GameWindowPvE(QWidget *parent, int dim, bool aiStart, int depth);
     ~GameWindowPvE();
 
 private:

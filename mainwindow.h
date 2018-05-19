@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "gamewindow.h"
+#include "gamewindowpvp.h"
 #include "gamewindowpve.h"
 
 namespace Ui
@@ -20,7 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    GameWindow *gameWindow;
+    GameWindowPvP *gameWindowPvP;
     GameWindowPvE *gameWindowPvE;
 
 private slots:

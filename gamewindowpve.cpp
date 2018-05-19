@@ -11,7 +11,7 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
     _turnNum = 0;
     _playerOneScore = 0;
     _playerTwoScore = 0;
-    _depth = 3;
+    _depth = 0;
 
     initBoard();
     _utility = Utility();
@@ -22,7 +22,7 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart) :
+GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart, int depth) :
     QMainWindow(parent),
     ui(new Ui::GameWindowPvE)
 {
@@ -31,10 +31,9 @@ GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart) :
     _turnNum = 0;
     _playerOneScore = 0;
     _playerTwoScore = 0;
-    _depth = 3;
+    _depth = depth;
 
     initBoard();
-    _utility = Utility();
 
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"

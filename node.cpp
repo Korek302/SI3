@@ -31,11 +31,13 @@ Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
 
 Node::~Node()
 {
-    //for(int i = 0; i < _dim; i++)
-    //{
-        //delete _currBoard[i];
-    //}
-    //delete _currBoard;
+    /*
+    for(int i = 0; i < _dim; i++)
+    {
+        delete _currBoard[i];
+    }
+    delete _currBoard;
+    */
 }
 
 int Node::getValue()
@@ -125,8 +127,8 @@ void Node::calcChildren()
             if(_currBoard[i][j] == 0)
             {
                 _currBoard[i][j] = 1;
-                int** tempCopy = _utility.copyBoard(_currBoard, _dim);
-                _children.append(Node(tempCopy, QPair<int, int>(i, j), _dim, _depth - 1));
+                //int** tempCopy = _utility.copyBoard(_currBoard, _dim);
+                _children.append(Node(_currBoard, QPair<int, int>(i, j), _dim, _depth - 1));
                 _currBoard[i][j] = 0;
             }
         }
