@@ -3,18 +3,11 @@
 
 
 GameWindowPvE::GameWindowPvE(QWidget *parent) :
-    QMainWindow(parent),
+    GameWindow(parent),
     ui(new Ui::GameWindowPvE)
 {
     ui->setupUi(this);
-    _dim = 0;
-    _turnNum = 0;
-    _playerOneScore = 0;
-    _playerTwoScore = 0;
     _depth = 0;
-
-    initBoard();
-    _utility = Utility();
 
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
@@ -23,14 +16,10 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
 }
 
 GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart, int depth) :
-    QMainWindow(parent),
+    GameWindow(parent, dim),
     ui(new Ui::GameWindowPvE)
 {
     ui->setupUi(this);
-    _dim = dim;
-    _turnNum = 0;
-    _playerOneScore = 0;
-    _playerTwoScore = 0;
     _depth = depth;
 
     initBoard();
@@ -187,49 +176,16 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
     }
 }
 
-int GameWindowPvE::updateScore(int posX, int posY)
-{
-    int out = 0;
-    for(int i = 0; i < _dim; i++)
-    {
-        if(_board[posX][i] == 0)
-        {
-            break;
-        }
-        if(i == _dim - 1)
-        {
-            out += _dim;
-        }
-    }
-    for(int i = 0; i < _dim; i++)
-    {
-        if(_board[i][posY] == 0)
-        {
-            break;
-        }
-        if(i == _dim - 1)
-        {
-            out += _dim;
-        }
-    }
-    out += _utility.checkTab(_utility.getDiag1(posX, posY, _board, _dim));
-    out += _utility.checkTab(_utility.getDiag2(posX, posY, _board, _dim));
-    return out;
-}
-
 void GameWindowPvE::initBoard()
 {
-    _board = new int*[_dim];
     for(int i = 0; i < _dim; i++)
     {
-        _board[i] = new int[_dim];
         for(int j = 0; j < _dim; j++)
         {
             QPushButton* button = new QPushButton(" ");
             connect(button,SIGNAL(released()),this,SLOT(onPushButtonClick()));
             button->setMaximumHeight(button->width());
             ui->gridLayout->addWidget(button, i, j);
-            _board[i][j] = 0;
         }
     }
 }

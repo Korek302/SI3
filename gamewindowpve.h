@@ -1,15 +1,12 @@
 #ifndef GAMEWINDOWPVE_H
 #define GAMEWINDOWPVE_H
 
+#include "gamewindow.h"
 #include "node.h"
-#include "utility.h"
 
-#include <QMainWindow>
 #include <limits>
 #include <QPushButton>
 #include <QGridLayout>
-#include <QDebug>
-#include <QVector>
 
 
 namespace Ui
@@ -17,7 +14,7 @@ namespace Ui
     class GameWindowPvE;
 }
 
-class GameWindowPvE : public QMainWindow
+class GameWindowPvE : public GameWindow
 {
     Q_OBJECT
 
@@ -28,17 +25,10 @@ public:
 
 private:
     Ui::GameWindowPvE *ui;
-    int _dim;
-    int** _board;
-    int _turnNum;
-    int _playerOneScore;
-    int _playerTwoScore;
     int _depth;
-    Utility _utility;
 
     void computerTurn(QPair<int, int> move);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
-    int updateScore(int posX, int posY);
     void initBoard();
 
 private slots:

@@ -8,7 +8,6 @@ GameWindowPvP::GameWindowPvP(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    initBoard();
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
@@ -98,17 +97,14 @@ void GameWindowPvP::onPushButtonClick()
 
 void GameWindowPvP::initBoard()
 {
-    _board = new int*[_dim];
     for(int i = 0; i < _dim; i++)
     {
-        _board[i] = new int[_dim];
         for(int j = 0; j < _dim; j++)
         {
             QPushButton* button = new QPushButton(" ");
             connect(button,SIGNAL(released()),this,SLOT(onPushButtonClick()));
             button->setMaximumHeight(button->width());
             ui->gridLayout->addWidget(button, i, j);
-            //_board[i][j] = 0;
         }
     }
 }

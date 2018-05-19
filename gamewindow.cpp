@@ -69,10 +69,6 @@ void GameWindow::initBoard()
         _board[i] = new int[_dim];
         for(int j = 0; j < _dim; j++)
         {
-            //QPushButton* button = new QPushButton(" ");
-            //connect(button,SIGNAL(released()),this,SLOT(onPushButtonClick()));
-            //button->setMaximumHeight(button->width());
-            //ui->gridLayout->addWidget(button, i, j);
             _board[i][j] = 0;
         }
     }
