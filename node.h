@@ -11,6 +11,7 @@ class Node
 public:
     Node();
     Node(int** currBoard, QPair<int, int> move, int dim, int depth);
+    Node(const Node& other);
     ~Node();
 
     int getValue();
@@ -18,6 +19,8 @@ public:
     bool getIsTerminal();
     int** getCurrBoard();
     QVector<Node> getChildren();
+
+    void operator=(const Node& other);
 
 private:
     int** _currBoard;

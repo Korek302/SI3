@@ -110,3 +110,16 @@ void Utility::showBoard(int** original, int dim)
     }
     qDebug("\n");
 }
+
+void Utility::initBoard(int** board, int dim)
+{
+    board = new int*[dim];
+    for(int i = 0; i < dim; i++)
+    {
+        board[i] = new int[dim];
+        for(int j = 0; j < dim; j++)
+        {
+            board[i][j] = 0;
+        }
+    }
+}

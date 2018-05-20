@@ -138,7 +138,7 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
 Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
-    Node bestChild;
+    Node bestChild;//(0, QPair<int, int>(0, 0), 0, 0);// = Node(0, QPair<int, int>(0, 0), 0, 0);
 
     QVector<Node> children = currNode.getChildren();
 

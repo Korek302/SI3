@@ -16,7 +16,7 @@ public:
     QVector<int> getDiag2(int rowId, int colId, int** board, int dim);
     QPair<int, int> diffSpots(int** tab1, int** tab2, int dim);
     void showBoard(int** original, int dim);
-
+    void initBoard(int** board, int dim);
 private:
 };
 

@@ -21,7 +21,7 @@ public:
 private:
     Ui::MainWindow *ui;
     GameWindow *gameWindowPvP;
-    GameWindowPvE *gameWindowPvE;
+    GameWindow *gameWindowPvE;
 
 private slots:
     void onPushButtonClick();
