@@ -62,7 +62,7 @@ void GameWindowPvE::onPushButtonClick()
     ui->gridLayout->getItemPosition(buttonIndex, &posX, &posY, &flush, &flush);
 
     _board[posX][posY] = 1;
-    _playerOneScore += updateScore(posX, posY);
+    _playerOneScore += updateScoreClosure(posX, posY);
 
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
@@ -91,6 +91,7 @@ void GameWindowPvE::onPushButtonClick()
     else
     {
         computerTurn(QPair<int, int>(posX, posY));
+        //computerTurnRandom();
     }
     button->disconnect();
 }
@@ -119,7 +120,7 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
 
     _board[coords.first][coords.second] = 1;
 
-    _playerTwoScore += updateScore(coords.first, coords.second);
+    _playerTwoScore += updateScoreClosure(coords.first, coords.second);
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
                        "\nRedPlayer: " + QString::number(_playerTwoScore) +
@@ -198,9 +199,7 @@ Node GameWindowPvE::alfabeta(Node currNode, int depth, int alfa, int beta, bool 
 Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
-    Node bestChild;//(0, QPair<int, int>(0, 0), 0, 0);// = Node(0, QPair<int, int>(0, 0), 0, 0);
-
-    //QVector<Node> children = currNode.getChildren();
+    Node bestChild;
 
     if(depth == 0 || currNode.getIsTerminal())
     {
@@ -234,6 +233,106 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
         }
         return bestChild;
     }
+}
+
+Node GameWindowPvE::minimaxRandChildPick(Node currNode, int depth, bool maximizingPlayer)
+{
+    int bestValue;
+    Node bestChild;
+
+    if(depth == 0 || currNode.getIsTerminal())
+    {
+        return currNode;
+    }
+    if(maximizingPlayer)
+    {
+        bestValue = std::numeric_limits<int>::min();
+        int counter = 0;
+        QVector<int> indices;
+        while(counter < currNode.getChildren().size())
+        {
+            int i = rand() % currNode.getChildren().size();
+            while(indices.contains(i))
+            {
+                i = rand() % currNode.getChildren().size();
+            }
+            indices.append(i);
+
+            Node n = currNode.getChildren().at(i);
+            Node temp = minimax(n, depth - 1, false);
+            bestValue = std::max(bestValue, temp.getValue());
+            if(temp.getValue() >= bestValue)
+            {
+                bestChild = temp;
+            }
+        }
+        return bestChild;
+    }
+    else
+    {
+        bestValue = std::numeric_limits<int>::max();
+        foreach(Node n, currNode.getChildren())
+        {
+            Node temp = minimax(n, depth - 1, true);
+            bestValue = std::min(bestValue, temp.getValue());
+            if(temp.getValue() <= bestValue)
+            {
+                bestChild = temp;
+            }
+        }
+        return bestChild;
+    }
+}
+
+void GameWindowPvE::computerTurnRandom()
+{
+    QPair<int, int> coords;
+    bool isOk = false;
+
+    while(!isOk)
+    {
+        int posX = rand() % _dim;
+        int posY = rand() % _dim;
+        if(_board[posX][posY] == 0)
+        {
+            isOk = true;
+            coords.first = posX;
+            coords.second = posY;
+        }
+    }
+
+    qDebug(QString::number(coords.first).toLatin1() + " " + QString::number(coords.second).toLatin1());
+
+    QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
+    button->widget()->setStyleSheet("background-color: red");
+
+    _board[coords.first][coords.second] = 1;
+
+    _playerTwoScore += updateScore(coords.first, coords.second);
+    ui->label->setText("Score:"
+                       "\nBluePlayer: " + QString::number(_playerOneScore) +
+                       "\nRedPlayer: " + QString::number(_playerTwoScore) +
+                       "\n\nCurrPlayer: Blue");
+
+    _turnNum++;
+
+    if(_turnNum > _dim*_dim - 1)
+    {
+        qDebug("koniec");
+        if(_playerOneScore > _playerTwoScore)
+        {
+            ui->label->setText("Winner: Blue");
+        }
+        else if(_playerOneScore < _playerTwoScore)
+        {
+            ui->label->setText("Winner: Red");
+        }
+        else
+        {
+            ui->label->setText("Tie");
+        }
+    }
+    button->widget()->disconnect();
 }
 
 void GameWindowPvE::initBoard()

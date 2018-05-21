@@ -32,7 +32,8 @@ Node::Node(int** currBoard, QPair<int, int> move, int dim, int depth)
     _isTerminal = isTerminal();
     _move.first = move.first;
     _move.second = move.second;
-    _value = calcValue();
+    //_value = calcValue();
+    _value = calcValueColsure();
 
     if(!_isTerminal && !(_depth < 1))
     {
@@ -189,6 +190,52 @@ int Node::calcValue()
     return out;
 }
 
+int Node::calcValueColsure()
+{
+    int out = 0;
+    int posX = _move.first;
+    int posY = _move.second;
+    if(posX == -1 && posY == -1)
+    {
+        return 0;
+    }
+
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_currBoard[posX][i] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += 1;
+        }
+    }
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_currBoard[i][posY] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += 1;
+        }
+    }
+
+    if(_utility.checkTab(_utility.getDiag1(posX, posY, _currBoard, _dim)) > 1)
+    {
+        out += 1;
+    }
+
+    if(_utility.checkTab(_utility.getDiag2(posX, posY, _currBoard, _dim)) > 1)
+    {
+        out += 1;
+    }
+
+    return out;
+}
+
 void Node::calcChildren()
 {
     for(int i = 0; i < _dim; i++)
@@ -198,7 +245,6 @@ void Node::calcChildren()
             if(_currBoard[i][j] == 0)
             {
                 _currBoard[i][j] = 1;
-                //int** tempCopy = _utility.copyBoard(_currBoard, _dim);
                 _children.append(Node(_currBoard, QPair<int, int>(i, j), _dim, _depth - 1));
                 _currBoard[i][j] = 0;
             }

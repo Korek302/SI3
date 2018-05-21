@@ -61,6 +61,50 @@ int GameWindow::updateScore(int posX, int posY)
     return out;
 }
 
+int GameWindow::updateScoreClosure(int posX, int posY)
+{
+    int out = 0;
+    if(posX == -1 && posY == -1)
+    {
+        return 0;
+    }
+
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[posX][i] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += 1;
+        }
+    }
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[i][posY] == 0)
+        {
+            break;
+        }
+        if(i == _dim - 1)
+        {
+            out += 1;
+        }
+    }
+
+    if(_utility.checkTab(_utility.getDiag1(posX, posY, _board, _dim)) > 1)
+    {
+        out += 1;
+    }
+
+    if(_utility.checkTab(_utility.getDiag2(posX, posY, _board, _dim)) > 1)
+    {
+        out += 1;
+    }
+
+    return out;
+}
+
 void GameWindow::initBoard()
 {
     _board = new int*[_dim];

@@ -24,6 +24,7 @@ protected:
     Utility _utility;
 
     int updateScore(int posX, int posY);
+    int updateScoreClosure(int posX, int posY);
     virtual void initBoard();
 };
 

@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QApplication>
+#include <cstdlib>
 
 
 namespace Ui
@@ -30,6 +31,7 @@ private:
     bool _alfabeta;
 
     void computerTurn(QPair<int, int> move);
+    void computerTurnRandom();
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
     Node alfabeta(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer);
     void initBoard();

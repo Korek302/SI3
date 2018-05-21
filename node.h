@@ -34,6 +34,7 @@ private:
 
     bool isTerminal();
     int calcValue();
+    int calcValueColsure();
     void calcChildren();
 };
 
