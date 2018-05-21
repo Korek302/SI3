@@ -1,5 +1,5 @@
-#ifndef GAMEWINDOWPVE_H
-#define GAMEWINDOWPVE_H
+#ifndef GAMEWINDOWEVE_H
+#define GAMEWINDOWEVE_H
 
 #include "gamewindow.h"
 #include "node.h"
@@ -12,22 +12,23 @@
 
 namespace Ui
 {
-    class GameWindowPvE;
+    class GameWindowEvE;
 }
 
-class GameWindowPvE : public GameWindow
+class GameWindowEvE : public GameWindow
 {
     Q_OBJECT
 
 public:
-    explicit GameWindowPvE(QWidget *parent);
-    explicit GameWindowPvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta);
-    ~GameWindowPvE();
+    explicit GameWindowEvE(QWidget *parent);
+    explicit GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta);
+    ~GameWindowEvE();
 
 private:
-    Ui::GameWindowPvE *ui;
+    Ui::GameWindowEvE *ui;
     int _depth;
     bool _alfabeta;
+    bool _red;
 
     void computerTurn(QPair<int, int> move);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
@@ -38,4 +39,4 @@ private slots:
     void onPushButtonClick();
 };
 
-#endif // GAMEWINDOWPVE_H
+#endif // GAMEWINDOWEVE_H

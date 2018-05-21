@@ -30,7 +30,8 @@ SOURCES += \
     node.cpp \
     utility.cpp \
     gamewindowpvp.cpp \
-    gamewindow.cpp
+    gamewindow.cpp \
+    gamewindoweve.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,9 +39,11 @@ HEADERS += \
     node.h \
     utility.h \
     gamewindowpvp.h \
-    gamewindow.h
+    gamewindow.h \
+    gamewindoweve.h
 
 FORMS += \
         mainwindow.ui \
     gamewindowpve.ui \
-    gamewindowpvp.ui
+    gamewindowpvp.ui \
+    gamewindoweve.ui

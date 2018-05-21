@@ -1,14 +1,15 @@
-#include "gamewindowpve.h"
-#include "ui_gamewindowpve.h"
+#include "gamewindoweve.h"
+#include "ui_gamewindoweve.h"
 
 
-GameWindowPvE::GameWindowPvE(QWidget *parent) :
+GameWindowEvE::GameWindowEvE(QWidget *parent) :
     GameWindow(parent),
-    ui(new Ui::GameWindowPvE)
+    ui(new Ui::GameWindowEvE)
 {
     ui->setupUi(this);
     _depth = 0;
     _alfabeta = false;
+    _red = true;
 
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
@@ -16,29 +17,25 @@ GameWindowPvE::GameWindowPvE(QWidget *parent) :
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindowPvE::GameWindowPvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta) :
+GameWindowEvE::GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta) :
     GameWindow(parent, dim),
-    ui(new Ui::GameWindowPvE)
+    ui(new Ui::GameWindowEvE)
 {
     ui->setupUi(this);
     _depth = depth;
     _alfabeta = alfabeta;
+    _red = aiStart;
 
     initBoard();
 
     ui->label->setText("Score:"
                        "\nBluePlayer: 0"
                        "\nRedPlayer: 0"
-                       "\n\nCurrPlayer: Blue");
-
-    if(aiStart)
-    {
-        computerTurn(QPair<int, int>(-1, -1));
-    }
-
+                       "\n\nCurrPlayer: Red");
+    connect(ui->pushButton,SIGNAL(released()),this,SLOT(onPushButtonClick()));
 }
 
-GameWindowPvE::~GameWindowPvE()
+GameWindowEvE::~GameWindowEvE()
 {
     delete ui;
     for(int i = 0; i < _dim; i++)
@@ -48,58 +45,16 @@ GameWindowPvE::~GameWindowPvE()
     delete _board;
 }
 
-void GameWindowPvE::onPushButtonClick()
+void GameWindowEvE::onPushButtonClick()
 {
-    int posX = 0;
-    int posY = 0;
-    int flush = 0;
-
-    QWidget* button =(QWidget*)(this->sender());
-    int buttonIndex = ui->gridLayout->indexOf(button);
-    button->setStyleSheet("background-color: blue");
-    //button->update();
-
-    ui->gridLayout->getItemPosition(buttonIndex, &posX, &posY, &flush, &flush);
-
-    _board[posX][posY] = 1;
-    _playerOneScore += updateScore(posX, posY);
-
-    ui->label->setText("Score:"
-                       "\nBluePlayer: " + QString::number(_playerOneScore) +
-                       "\nRedPlayer: " + QString::number(_playerTwoScore) +
-                       "\n\nCurrPlayer: Red");
-    qApp->processEvents();
-
-    _turnNum++;
-
-    if(_turnNum > _dim*_dim - 1)
-    {
-        qDebug("koniec");
-        if(_playerOneScore > _playerTwoScore)
-        {
-            ui->label->setText("Winner: Blue");
-        }
-        else if(_playerOneScore < _playerTwoScore)
-        {
-            ui->label->setText("Winner: Red");
-        }
-        else
-        {
-            ui->label->setText("Tie");
-        }
-    }
-    else
-    {
-        computerTurn(QPair<int, int>(posX, posY));
-    }
-    button->disconnect();
+    computerTurn(QPair<int, int>(-1, -1));
 }
 
-void GameWindowPvE::computerTurn(QPair<int, int> move)
+void GameWindowEvE::computerTurn(QPair<int, int> move)
 {
     QPair<int, int> coords;
 
-    if(_alfabeta)
+    if(_alfabeta && _red)
     {
         coords = alfabeta(Node(_board, move, _dim, _depth),
                           _depth, std::numeric_limits<int>::min(),
@@ -115,15 +70,27 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
 
 
     QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
-    button->widget()->setStyleSheet("background-color: red");
 
-    _board[coords.first][coords.second] = 1;
-
-    _playerTwoScore += updateScore(coords.first, coords.second);
-    ui->label->setText("Score:"
-                       "\nBluePlayer: " + QString::number(_playerOneScore) +
-                       "\nRedPlayer: " + QString::number(_playerTwoScore) +
-                       "\n\nCurrPlayer: Blue");
+    if(_red)
+    {
+        button->widget()->setStyleSheet("background-color: red");
+        _board[coords.first][coords.second] = 1;
+        _playerOneScore += updateScore(coords.first, coords.second);
+        ui->label->setText("Score:"
+                           "\nBluePlayer: " + QString::number(_playerTwoScore) +
+                           "\nRedPlayer: " + QString::number(_playerOneScore) +
+                           "\n\nCurrPlayer: Blue");
+    }
+    else
+    {
+        button->widget()->setStyleSheet("background-color: blue");
+        _board[coords.first][coords.second] = 1;
+        _playerTwoScore += updateScore(coords.first, coords.second);
+        ui->label->setText("Score:"
+                           "\nBluePlayer: " + QString::number(_playerTwoScore) +
+                           "\nRedPlayer: " + QString::number(_playerOneScore) +
+                           "\n\nCurrPlayer: Red");
+    }
 
     _turnNum++;
 
@@ -132,21 +99,28 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
         qDebug("koniec");
         if(_playerOneScore > _playerTwoScore)
         {
-            ui->label->setText("Winner: Blue");
+            ui->label->setText("Winner: Red");
         }
         else if(_playerOneScore < _playerTwoScore)
         {
-            ui->label->setText("Winner: Red");
+            ui->label->setText("Winner: Blue");
         }
         else
         {
             ui->label->setText("Tie");
         }
     }
-    button->widget()->disconnect();
+    else
+    {
+        button->widget()->disconnect();
+
+        qApp->processEvents();
+        _red = !_red;
+        computerTurn(coords);
+    }
 }
 
-Node GameWindowPvE::alfabeta(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer)
+Node GameWindowEvE::alfabeta(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer)
 {
     int bestValue;
     Node bestChild;
@@ -195,12 +169,10 @@ Node GameWindowPvE::alfabeta(Node currNode, int depth, int alfa, int beta, bool 
     }
 }
 
-Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
+Node GameWindowEvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
-    Node bestChild;//(0, QPair<int, int>(0, 0), 0, 0);// = Node(0, QPair<int, int>(0, 0), 0, 0);
-
-    //QVector<Node> children = currNode.getChildren();
+    Node bestChild;
 
     if(depth == 0 || currNode.getIsTerminal())
     {
@@ -236,14 +208,13 @@ Node GameWindowPvE::minimax(Node currNode, int depth, bool maximizingPlayer)
     }
 }
 
-void GameWindowPvE::initBoard()
+void GameWindowEvE::initBoard()
 {
     for(int i = 0; i < _dim; i++)
     {
         for(int j = 0; j < _dim; j++)
         {
             QPushButton* button = new QPushButton(" ");
-            connect(button,SIGNAL(released()),this,SLOT(onPushButtonClick()));
             button->setMaximumHeight(button->width());
             ui->gridLayout->addWidget(button, i, j);
         }
