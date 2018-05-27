@@ -34,6 +34,7 @@ private:
     void computerTurnRandom();
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
     Node alfabeta(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer);
+    Node minimaxRandChildPick(Node currNode, int depth, bool maximizingPlayer);
     void initBoard();
 
 private slots:

@@ -25,6 +25,8 @@ protected:
 
     int updateScore(int posX, int posY);
     int updateScoreClosure(int posX, int posY);
+    int updateScoreColorsBlue(int posX, int posY);
+    int updateScoreColorsRed(int posX, int posY);
     virtual void initBoard();
 };
 

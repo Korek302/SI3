@@ -64,6 +64,42 @@ int Utility::checkTab(QVector<int> row)
     return i > 2 ? i : 0;
 }
 
+int Utility::checkTabBlue(QVector<int> row)
+{
+    int i = 0;
+    int out = 0;
+    for (; i < row.length(); i++)
+    {
+        if(row.at(i) == 0)
+        {
+            return 0;
+        }
+        if(row.at(i) == 1)
+        {
+            out++;
+        }
+    }
+    return i > 2 ? out : 0;
+}
+
+int Utility::checkTabRed(QVector<int> row)
+{
+    int i = 0;
+    int out = 0;
+    for (; i < row.length(); i++)
+    {
+        if(row.at(i) == 0)
+        {
+            return 0;
+        }
+        if(row.at(i) == -1)
+        {
+            out++;
+        }
+    }
+    return i > 2 ? out : 0;
+}
+
 int** Utility::copyBoard(int** original, int dim)
 {
     int** out = new int*[dim];

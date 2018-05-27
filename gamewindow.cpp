@@ -105,6 +105,90 @@ int GameWindow::updateScoreClosure(int posX, int posY)
     return out;
 }
 
+int GameWindow::updateScoreColorsRed(int posX, int posY)
+{
+    int out = 0;
+    int counter = 0;
+    if(posX == -1 && posY == -1)
+    {
+        return 0;
+    }
+
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[posX][i] == 0)
+        {
+            counter = 0;
+            break;
+        }
+        if(_board[posX][i] == -1)
+        {
+            counter++;
+        }
+    }
+    out += counter;
+    counter = 0;
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[i][posY] == 0)
+        {
+            counter = 0;
+            break;
+        }
+        if(_board[i][posY] == -1)
+        {
+            counter++;
+        }
+    }
+    out += counter;
+    out += _utility.checkTabRed(_utility.getDiag1(posX, posY, _board, _dim));
+    out += _utility.checkTabRed(_utility.getDiag2(posX, posY, _board, _dim));
+
+    return out;
+}
+
+int GameWindow::updateScoreColorsBlue(int posX, int posY)
+{
+    int out = 0;
+    int counter = 0;
+    if(posX == -1 && posY == -1)
+    {
+        return 0;
+    }
+
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[posX][i] == 0)
+        {
+            counter = 0;
+            break;
+        }
+        if(_board[posX][i] == 1)
+        {
+            counter++;
+        }
+    }
+    out += counter;
+    counter = 0;
+    for(int i = 0; i < _dim; i++)
+    {
+        if(_board[i][posY] == 0)
+        {
+            counter = 0;
+            break;
+        }
+        if(_board[i][posY] == 1)
+        {
+            counter++;
+        }
+    }
+    out += counter;
+    out += _utility.checkTabBlue(_utility.getDiag1(posX, posY, _board, _dim));
+    out += _utility.checkTabBlue(_utility.getDiag2(posX, posY, _board, _dim));
+
+    return out;
+}
+
 void GameWindow::initBoard()
 {
     _board = new int*[_dim];

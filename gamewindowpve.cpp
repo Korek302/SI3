@@ -62,7 +62,7 @@ void GameWindowPvE::onPushButtonClick()
     ui->gridLayout->getItemPosition(buttonIndex, &posX, &posY, &flush, &flush);
 
     _board[posX][posY] = 1;
-    _playerOneScore += updateScoreClosure(posX, posY);
+    _playerOneScore += updateScoreColorsBlue(posX, posY);
 
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
@@ -118,9 +118,9 @@ void GameWindowPvE::computerTurn(QPair<int, int> move)
     QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
     button->widget()->setStyleSheet("background-color: red");
 
-    _board[coords.first][coords.second] = 1;
+    _board[coords.first][coords.second] = -1;
 
-    _playerTwoScore += updateScoreClosure(coords.first, coords.second);
+    _playerTwoScore += updateScoreColorsRed(coords.first, coords.second);
     ui->label->setText("Score:"
                        "\nBluePlayer: " + QString::number(_playerOneScore) +
                        "\nRedPlayer: " + QString::number(_playerTwoScore) +
@@ -306,7 +306,7 @@ void GameWindowPvE::computerTurnRandom()
     QLayoutItem* button = (ui->gridLayout->itemAtPosition(coords.first, coords.second));
     button->widget()->setStyleSheet("background-color: red");
 
-    _board[coords.first][coords.second] = 1;
+    _board[coords.first][coords.second] = -1;
 
     _playerTwoScore += updateScore(coords.first, coords.second);
     ui->label->setText("Score:"

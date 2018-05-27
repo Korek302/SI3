@@ -11,6 +11,8 @@ public:
     ~Utility();
 
     int checkTab(QVector<int> row);
+    int checkTabBlue(QVector<int> row);
+    int checkTabRed(QVector<int> row);
     int** copyBoard(int** original, int dim);
     QVector<int> getDiag1(int rowId, int colId, int** board, int dim);
     QVector<int> getDiag2(int rowId, int colId, int** board, int dim);
