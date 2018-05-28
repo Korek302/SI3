@@ -10,7 +10,7 @@ class Node
 {
 public:
     Node();
-    Node(int** currBoard, QPair<int, int> move, int dim, int depth);
+    Node(int** currBoard, QPair<int, int> move, int dim, int depth, int gameMode);
     Node(const Node& other);
     ~Node();
 
@@ -31,10 +31,13 @@ private:
     bool _isTerminal;
     int _depth;
     Utility _utility;
+    int _gameMode;
 
     bool isTerminal();
     int calcValue();
     int calcValueColsure();
+    int calcValueColorsRed();
+    int calcValueColorsBlue();
     void calcChildren();
 };
 

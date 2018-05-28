@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton_3,SIGNAL(released()),this,SLOT(onPushButton_3Click()));
     connect(ui->pushButton_3,SIGNAL(released()),this,SLOT(hide()));
+
+    QStringList list=(QStringList()<<"colorless"<<"colorful"<<"one-for-one");
+    ui->comboBox->addItems(list);
 }
 
 MainWindow::~MainWindow()
@@ -38,7 +41,9 @@ void MainWindow::onPushButton_2Click()
     int depth = ui->spinBox_2->value();
     bool aiStart = ui->checkBox->isChecked();
     bool alfabeta = ui->checkBox_2->isChecked();
-    gameWindowPvE = new GameWindowPvE(this, dim, aiStart, depth, alfabeta);
+    int gameMode = ui->comboBox->currentIndex();
+    int nodeTraversal = ui->comboBox_2->currentIndex();
+    gameWindowPvE = new GameWindowPvE(this, dim, aiStart, depth, alfabeta, gameMode, nodeTraversal);
     gameWindowPvE->show();
 }
 
@@ -48,6 +53,8 @@ void MainWindow::onPushButton_3Click()
     int depth = ui->spinBox_2->value();
     bool aiStart = ui->checkBox->isChecked();
     bool alfabeta = ui->checkBox_2->isChecked();
-    gameWindowEvE = new GameWindowEvE(this, dim, aiStart, depth, alfabeta);
+    int gameMode = ui->comboBox->currentIndex();
+    int nodeTraversal = ui->comboBox_2->currentIndex();
+    gameWindowEvE = new GameWindowEvE(this, dim, aiStart, depth, alfabeta, gameMode, nodeTraversal);
     gameWindowEvE->show();
 }

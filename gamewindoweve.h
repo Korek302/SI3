@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QApplication>
+#include <cstdlib>
 
 
 namespace Ui
@@ -21,7 +22,7 @@ class GameWindowEvE : public GameWindow
 
 public:
     explicit GameWindowEvE(QWidget *parent);
-    explicit GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta);
+    explicit GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta, int gameMode, int nodeTraversal);
     ~GameWindowEvE();
 
 private:
@@ -29,10 +30,14 @@ private:
     int _depth;
     bool _alfabeta;
     bool _red;
+    int _gameMode;
+    int _nodeTraversal;
 
     void computerTurn(QPair<int, int> move);
     Node minimax(Node currNode, int depth, bool maximizingPlayer);
     Node alfabeta(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer);
+    Node minimaxRandChildPick(Node currNode, int depth, bool maximizingPlayer);
+    Node alfabetaRandChildPick(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer);
     void initBoard();
 
 private slots:

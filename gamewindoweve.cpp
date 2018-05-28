@@ -17,7 +17,7 @@ GameWindowEvE::GameWindowEvE(QWidget *parent) :
                        "\n\nCurrPlayer: Blue");
 }
 
-GameWindowEvE::GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta) :
+GameWindowEvE::GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, bool alfabeta, int gameMode, int nodeTraversal) :
     GameWindow(parent, dim),
     ui(new Ui::GameWindowEvE)
 {
@@ -25,6 +25,8 @@ GameWindowEvE::GameWindowEvE(QWidget *parent, int dim, bool aiStart, int depth, 
     _depth = depth;
     _alfabeta = alfabeta;
     _red = aiStart;
+    _gameMode = gameMode;
+    _nodeTraversal = nodeTraversal;
 
     initBoard();
 
@@ -54,15 +56,31 @@ void GameWindowEvE::computerTurn(QPair<int, int> move)
 {
     QPair<int, int> coords;
 
-    if(_alfabeta && _red)
+    if(_nodeTraversal == 0)
     {
-        coords = alfabeta(Node(_board, move, _dim, _depth),
-                          _depth, std::numeric_limits<int>::min(),
-                          std::numeric_limits<int>::max(), true).getMove();
+        if(_alfabeta)
+        {
+            coords = alfabeta(Node(_board, move, _dim, _depth, _gameMode),
+                              _depth, std::numeric_limits<int>::min(),
+                              std::numeric_limits<int>::max(), true).getMove();
+        }
+        else
+        {
+            coords = minimax(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
+        }
     }
-    else
+    else if(_nodeTraversal == 1)
     {
-        coords = minimax(Node(_board, move, _dim, _depth), _depth, true).getMove();
+        if(_alfabeta)
+        {
+            coords = alfabetaRandChildPick(Node(_board, move, _dim, _depth, _gameMode),
+                              _depth, std::numeric_limits<int>::min(),
+                              std::numeric_limits<int>::max(), true).getMove();
+        }
+        else
+        {
+            coords = minimaxRandChildPick(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
+        }
     }
 
 
@@ -74,8 +92,19 @@ void GameWindowEvE::computerTurn(QPair<int, int> move)
     if(_red)
     {
         button->widget()->setStyleSheet("background-color: red");
-        _board[coords.first][coords.second] = 1;
-        _playerOneScore += updateScore(coords.first, coords.second);
+        _board[coords.first][coords.second] = -1;
+        if(_gameMode == 0)
+        {
+            _playerTwoScore += updateScore(coords.first, coords.second);
+        }
+        else if(_gameMode == 1)
+        {
+            _playerTwoScore += updateScoreColorsRed(coords.first, coords.second);
+        }
+        else if(_gameMode == 2)
+        {
+            _playerTwoScore += updateScoreClosure(coords.first, coords.second);
+        }
         ui->label->setText("Score:"
                            "\nBluePlayer: " + QString::number(_playerTwoScore) +
                            "\nRedPlayer: " + QString::number(_playerOneScore) +
@@ -85,7 +114,18 @@ void GameWindowEvE::computerTurn(QPair<int, int> move)
     {
         button->widget()->setStyleSheet("background-color: blue");
         _board[coords.first][coords.second] = 1;
-        _playerTwoScore += updateScore(coords.first, coords.second);
+        if(_gameMode == 0)
+        {
+            _playerOneScore += updateScore(coords.first, coords.second);
+        }
+        else if(_gameMode == 1)
+        {
+            _playerOneScore += updateScoreColorsRed(coords.first, coords.second);
+        }
+        else if(_gameMode == 2)
+        {
+            _playerOneScore += updateScoreClosure(coords.first, coords.second);
+        }
         ui->label->setText("Score:"
                            "\nBluePlayer: " + QString::number(_playerTwoScore) +
                            "\nRedPlayer: " + QString::number(_playerOneScore) +
@@ -99,11 +139,11 @@ void GameWindowEvE::computerTurn(QPair<int, int> move)
         qDebug("koniec");
         if(_playerOneScore > _playerTwoScore)
         {
-            ui->label->setText("Winner: Red");
+            ui->label->setText("Winner: Blue");
         }
         else if(_playerOneScore < _playerTwoScore)
         {
-            ui->label->setText("Winner: Blue");
+            ui->label->setText("Winner: Red");
         }
         else
         {
@@ -169,6 +209,77 @@ Node GameWindowEvE::alfabeta(Node currNode, int depth, int alfa, int beta, bool 
     }
 }
 
+Node GameWindowEvE::alfabetaRandChildPick(Node currNode, int depth, int alfa, int beta, bool maximizingPlayer)
+{
+    int bestValue;
+    Node bestChild;
+
+    if(depth == 0 || currNode.getIsTerminal())
+    {
+        return currNode;
+    }
+    if(maximizingPlayer)
+    {
+        bestValue = std::numeric_limits<int>::min();
+        int counter = 0;
+        QVector<int> indices;
+        while(counter < currNode.getChildren().size())
+        {
+            int i = rand() % currNode.getChildren().size();
+            while(indices.contains(i))
+            {
+                i = rand() % currNode.getChildren().size();
+            }
+            indices.append(i);
+
+            Node n = currNode.getChildren().at(i);
+            Node temp = alfabetaRandChildPick(n, depth - 1, alfa, beta, false);
+            bestValue = std::max(bestValue, temp.getValue());
+            if(temp.getValue() >= bestValue)
+            {
+                bestChild = temp;
+            }
+            alfa = std::max(alfa, bestValue);
+            if(beta <= alfa)
+            {
+                break;
+            }
+            counter++;
+        }
+        return bestChild;
+    }
+    else
+    {
+        bestValue = std::numeric_limits<int>::max();
+        int counter = 0;
+        QVector<int> indices;
+        while(counter < currNode.getChildren().size())
+        {
+            int i = rand() % currNode.getChildren().size();
+            while(indices.contains(i))
+            {
+                i = rand() % currNode.getChildren().size();
+            }
+            indices.append(i);
+
+            Node n = currNode.getChildren().at(i);
+            Node temp = alfabetaRandChildPick(n, depth - 1, alfa, beta, true);
+            bestValue = std::min(bestValue, temp.getValue());
+            if(temp.getValue() <= bestValue)
+            {
+                bestChild = temp;
+            }
+            beta = std::min(alfa, bestValue);
+            if(beta <= alfa)
+            {
+                break;
+            }
+            counter++;
+        }
+        return bestChild;
+    }
+}
+
 Node GameWindowEvE::minimax(Node currNode, int depth, bool maximizingPlayer)
 {
     int bestValue;
@@ -203,6 +314,67 @@ Node GameWindowEvE::minimax(Node currNode, int depth, bool maximizingPlayer)
             {
                 bestChild = temp;
             }
+        }
+        return bestChild;
+    }
+}
+
+Node GameWindowEvE::minimaxRandChildPick(Node currNode, int depth, bool maximizingPlayer)
+{
+    int bestValue;
+    Node bestChild;
+
+    if(depth == 0 || currNode.getIsTerminal())
+    {
+        return currNode;
+    }
+    if(maximizingPlayer)
+    {
+        bestValue = std::numeric_limits<int>::min();
+        int counter = 0;
+        QVector<int> indices;
+        while(counter < currNode.getChildren().size())
+        {
+            int i = rand() % currNode.getChildren().size();
+            while(indices.contains(i))
+            {
+                i = rand() % currNode.getChildren().size();
+            }
+            indices.append(i);
+
+            Node n = currNode.getChildren().at(i);
+            Node temp = minimax(n, depth - 1, false);
+            bestValue = std::max(bestValue, temp.getValue());
+            if(temp.getValue() >= bestValue)
+            {
+                bestChild = temp;
+            }
+            counter++;
+        }
+        return bestChild;
+    }
+    else
+    {
+        bestValue = std::numeric_limits<int>::max();
+        int counter = 0;
+        QVector<int> indices;
+        while(counter < currNode.getChildren().size())
+        {
+            int i = rand() % currNode.getChildren().size();
+            while(indices.contains(i))
+            {
+                i = rand() % currNode.getChildren().size();
+            }
+            indices.append(i);
+
+            Node n = currNode.getChildren().at(i);
+            Node temp = minimax(n, depth - 1, true);
+            bestValue = std::min(bestValue, temp.getValue());
+            if(temp.getValue() <= bestValue)
+            {
+                bestChild = temp;
+            }
+            counter++;
         }
         return bestChild;
     }
