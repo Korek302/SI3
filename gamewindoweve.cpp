@@ -56,31 +56,38 @@ void GameWindowEvE::computerTurn(QPair<int, int> move)
 {
     QPair<int, int> coords;
 
-    if(_nodeTraversal == 0)
+    if(_red)
     {
-        if(_alfabeta)
+        if(_nodeTraversal == 0)
         {
-            coords = alfabeta(Node(_board, move, _dim, _depth, _gameMode),
-                              _depth, std::numeric_limits<int>::min(),
-                              std::numeric_limits<int>::max(), true).getMove();
+            if(_alfabeta)
+            {
+                coords = alfabeta(Node(_board, move, _dim, _depth, _gameMode),
+                                  _depth, std::numeric_limits<int>::min(),
+                                  std::numeric_limits<int>::max(), true).getMove();
+            }
+            else
+            {
+                coords = minimax(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
+            }
         }
-        else
+        else if(_nodeTraversal == 1)
         {
-            coords = minimax(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
+            if(_alfabeta)
+            {
+                coords = alfabetaRandChildPick(Node(_board, move, _dim, _depth, _gameMode),
+                                  _depth, std::numeric_limits<int>::min(),
+                                  std::numeric_limits<int>::max(), true).getMove();
+            }
+            else
+            {
+                coords = minimaxRandChildPick(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
+            }
         }
     }
-    else if(_nodeTraversal == 1)
+    else
     {
-        if(_alfabeta)
-        {
-            coords = alfabetaRandChildPick(Node(_board, move, _dim, _depth, _gameMode),
-                              _depth, std::numeric_limits<int>::min(),
-                              std::numeric_limits<int>::max(), true).getMove();
-        }
-        else
-        {
-            coords = minimaxRandChildPick(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
-        }
+        coords = minimax(Node(_board, move, _dim, _depth, _gameMode), _depth, true).getMove();
     }
 
 
